@@ -8,6 +8,8 @@ import './index.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const endpoint = 'https://localhost:5001/api/';
 const productRoute = 'product/';
@@ -133,6 +135,15 @@ class Main extends React.Component {
 
         fetch(endpoint + productRoute, requestOptions).then(() => {
             this.getData();
+            toast.success('✅ ¡Producto añadido con éxito!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
         })
     }
 
@@ -152,6 +163,15 @@ class Main extends React.Component {
 
         fetch(endpoint + productRoute + id, requestOptions).then(() => {
             this.getData();
+            toast.info('🔁 ¡Producto modificado con éxito!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
         })
     }
 
@@ -164,6 +184,15 @@ class Main extends React.Component {
 
         fetch(endpoint + productRoute + id, requestOptions).then(() => {
             this.getData();
+            toast.error('❌ Producto eliminado', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
         })
     }
 
@@ -287,6 +316,8 @@ class Main extends React.Component {
                         </div>
                     </ModalFooter>
                 </Modal>
+
+                <ToastContainer />
 
             </div>
 
