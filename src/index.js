@@ -92,6 +92,58 @@ class Main extends React.Component {
         });
     }
 
+    validateProduct() {
+
+        const product = this.state.form;
+
+        if(!product.name || product.name == '' || !product.cost || product.cost == '' || !product.price || product.price == '')
+        {
+            toast.error('❗ Todos los campos deben ser completados', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+            
+            return false;
+        }
+
+        if(parseFloat(product.cost) > parseFloat(product.price))
+        {
+            toast.error('❗ El precio no puede ser menor que el costo', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+            
+            return false;
+        }
+        
+        if(product.name.length >= 150)
+        {
+            toast.error('❗ El nombre debe tener menos de 150 caractéres', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+            
+            return false;
+        }
+
+        return true;
+    }
+
     toggleModal() {
         this.setState({
             modalOpen: !this.state.modalOpen
@@ -106,7 +158,14 @@ class Main extends React.Component {
 
     openCreateModal() {
         this.setState({
-            itsCreateModal: true
+            itsCreateModal: true,
+            form: {
+                id: undefined,
+                name: '',
+                cost: undefined,
+                price: undefined,
+                brandid: 1
+            }
         })
         this.toggleModal();
     }
@@ -117,62 +176,102 @@ class Main extends React.Component {
             .then(res => res.json())
             .then(responseData => this.setState({
                 data: responseData
-            }));
+            }))
+            .catch(() => {
+                toast.error('❔ Se ha producido un error inesperado.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+            });
     }
 
     postData() {
-        this.toggleModal();
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                'name': this.state.form.name,
-                'cost': parseFloat(this.state.form.cost),
-                'price': parseFloat(this.state.form.price),
-                'brandid': parseFloat(this.state.form.brandid),
-            })
-        }
 
-        fetch(endpoint + productRoute, requestOptions).then(() => {
-            this.getData();
-            toast.success('✅ ¡Producto añadido con éxito!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                });
-        })
+        if(this.validateProduct())
+        {
+            this.toggleModal();
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'name': this.state.form.name,
+                    'cost': parseFloat(this.state.form.cost),
+                    'price': parseFloat(this.state.form.price),
+                    'brandid': parseFloat(this.state.form.brandid)
+                })
+            }
+    
+            fetch(endpoint + productRoute, requestOptions).then(() => {
+                this.getData();
+                toast.success('✅ ¡Producto añadido con éxito!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+            })
+            .catch(() => {
+                toast.error('❔ Se ha producido un error inesperado.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+            });
+        }
     }
 
     putData() {
-        this.toggleModal();
-        const id = this.state.form.id;
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                'name': this.state.form.name,
-                'cost': parseFloat(this.state.form.cost),
-                'price': parseFloat(this.state.form.price),
-                'brandid': parseFloat(this.state.form.brandid),
+        if(this.validateProduct())
+        {
+            this.toggleModal();
+            const id = this.state.form.id;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'name': this.state.form.name,
+                    'cost': parseFloat(this.state.form.cost),
+                    'price': parseFloat(this.state.form.price),
+                    'brandid': parseFloat(this.state.form.brandid),
+                })
+            }
+    
+            fetch(endpoint + productRoute + id, requestOptions).then(() => {
+                this.getData();
+                toast.info('🔁 ¡Producto modificado con éxito!', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
             })
+            .catch(() => {
+                toast.error('❔ Se ha producido un error inesperado.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+            });
         }
-
-        fetch(endpoint + productRoute + id, requestOptions).then(() => {
-            this.getData();
-            toast.info('🔁 ¡Producto modificado con éxito!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                });
-        })
     }
 
     deleteData() {
@@ -194,6 +293,17 @@ class Main extends React.Component {
                 progress: undefined,
                 });
         })
+        .catch(() => {
+            toast.error('❔ Se ha producido un error inesperado.', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                });
+        });
     }
 
     getBrands() {
@@ -201,7 +311,18 @@ class Main extends React.Component {
             .then(res => res.json())
             .then(responseData => this.setState({
                 brands: responseData
-            }));
+            }))
+            .catch(() => {
+                toast.error('❔ Se ha producido un error inesperado.', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    });
+            });
     }
 
     render() {
@@ -273,15 +394,15 @@ class Main extends React.Component {
                             <br />
 
                             <label htmlFor="cost">Costo</label>
-                            <input className="form-control" type="number" name="cost" id="cost" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.cost} />
+                            <input className="form-control" type="number" min="0" name="cost" id="cost" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.cost} />
                             <br />
 
                             <label htmlFor="price">Precio</label>
-                            <input className="form-control" type="number" name="price" id="price" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.price} />
+                            <input className="form-control" type="number" min="0" name="price" id="price" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.price} />
                             <br />
 
                             <label htmlFor="brandid">Marca</label>
-                            <select className="form-control" name="brandid" id="brandid" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.brandid}>
+                            <select className="form-control" name="brandid" id="brandid" onChange={this.handleChange} value={this.state.form.brandid} >
                                 {
                                     this.state.brands.map(brand => {
                                         return (
