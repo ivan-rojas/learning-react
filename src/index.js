@@ -252,7 +252,15 @@ class Main extends React.Component {
                             <br />
 
                             <label htmlFor="brandid">Marca</label>
-                            <input className="form-control" type="number" name="brandid" id="brandid" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.brandid} />
+                            <select className="form-control" name="brandid" id="brandid" onChange={this.handleChange} value={this.state.itsCreateModal ? undefined : this.state.form.brandid}>
+                                {
+                                    this.state.brands.map(brand => {
+                                        return (
+                                            <option key={brand.id.toString()} value={brand.id}>{brand.name}</option>
+                                        )
+                                    })
+                                }
+                            </select>
                             <br />
                         </div>
                     </ModalBody>
